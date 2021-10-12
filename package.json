@@ -1,0 +1,14 @@
+{
+  "name": "fcache",
+  "version": "1.0.0",
+  "description": "Favicon cache security exploitation project for CSCI 5271",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "author": "Leo Alfred",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
