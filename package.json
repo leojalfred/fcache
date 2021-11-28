@@ -2,7 +2,7 @@
   "name": "fcache",
   "version": "1.0.0",
   "description": "Favicon cache security exploitation project for CSCI 5271",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "start": "nodemon index.js"
   },
