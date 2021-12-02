@@ -1,17 +1,23 @@
 const express = require('express')
-const app = express()
+const main = express()
 const port = 3000
 
-// let i = 0
-// app.get('/favicon.ico', (req, res) => {
-//   console.log('Requested favicon', i)
-//   i++
-// })
+main.listen(port, () =>
+  console.log(`fcache listening at http://localhost:${port}`)
+)
 
-app.use(express.static('public'))
+main.use('/', express.static('sender'))
+main.use('/receiver', express.static('receiver'))
 
-app.listen(port, () => {
-  console.log(
-    `Favicon cache covert channel listening at http://localhost:${port}`
-  )
-})
+// const bits = 8
+// for (let i = 0; i < bits; i++) {
+//   const subdomain = express()
+//   subdomain.listen(4000 + i)
+//   subdomain.get('/', (req, res) => res.send(`Subdomain ${i}`))
+
+//   let j = 0
+//   subdomain.get('/favicon.ico', (req, res) => {
+//     console.log(`Requested favicon ${i}: ${j}`)
+//     j++
+//   })
+// }
