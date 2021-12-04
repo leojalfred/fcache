@@ -45,11 +45,11 @@ async function sender() {
   }
 
   // repeatedly send message
+  const interval = delay * message.length * 2
   while (true) {
     // align message to readable interval
     let time = Date.now()
-    const interval = delay * message.length
-    while (time % (interval * 2) !== 0) time = Date.now()
+    while (time % interval !== 0) time = Date.now()
 
     // send message
     // console.log('New message')

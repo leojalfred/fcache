@@ -52,7 +52,7 @@ async function receiver() {
   }
   let threshold = await getThreshold()
 
-  async function receive(id) {
+  async function receive() {
     let time = Date.now()
     let rate = 0
     // console.log(time)
@@ -65,24 +65,43 @@ async function receiver() {
     // console.log(rate, threshold)
 
     // add to message based off rate and threshold
-    if (rate < threshold) id.push(1)
-    else id.push(0)
-
-    console.log('ID', id)
-    return id
+    if (rate < threshold) return 1
+    else return 0
   }
 
-  // repeatedly receive message
+  const messages = []
   const length = 8
+
+  // average message and return it to string form
+  function averageMessage() {
+    const message = []
+    for (let i = 0; i < length; i++) {
+      message[i] = 0
+      for (let j = 0; j < messages.length; j++) message[i] += messages[j][i]
+      message[i] = Math.round(message[i] / messages.length)
+    }
+
+    return message.join('')
+  }
+
   const interval = delay * length * 2
+  let k = 0
+  const span = document.getElementById('id')
+
+  // repeatedly receive message
   while (true) {
     // align message to readable interval
     let time = Date.now()
     while (time % interval !== 0) time = Date.now()
 
     // get message
-    let id = []
-    for (let i = 0; i < length; i++) id = await receive(id)
+    const message = []
+    for (let i = 0; i < length; i++) message.push(await receive())
+
+    messages[k] = message
+    k = (k + 1) % 100
+
+    span.textContent = averageMessage()
   }
 }
 
