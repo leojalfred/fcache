@@ -1,9 +1,9 @@
 // main sender functionality
 async function sender() {
   // open database connection
-  const db = await idb.openDB('channel', 1, {
+  const db = await idb.openDB('sender', 1, {
     upgrade(db) {
-      db.createObjectStore('receiver', { keyPath: 'index' })
+      db.createObjectStore('sender', { keyPath: 'index' })
     },
   })
 
@@ -26,15 +26,15 @@ async function sender() {
   async function put() {
     // put message
     await db
-      .transaction('receiver', 'readwrite')
-      .objectStore('receiver')
+      .transaction('sender', 'readwrite')
+      .objectStore('sender')
       .put({ index: '0', string: strings[si] })
 
     si = +!si // alternate random string index
   }
 
   const message = [0, 0, 0, 0, 1, 1, 1, 1]
-  const delay = 1000
+  const delay = 200
 
   // function to send message until delay if message bit equals 1
   async function send(i) {
@@ -56,7 +56,7 @@ async function sender() {
     // align message to readable interval
     let time = Date.now()
     const interval = delay * message.length
-    while (time % interval !== 0) time = Date.now()
+    while (time % (interval * 2) !== 0) time = Date.now()
 
     console.log('New message')
     for (let i = 0; i < message.length; i++) await send(i)

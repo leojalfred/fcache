@@ -1,6 +1,6 @@
 async function receiver() {
   // open database connection
-  const db = await idb.openDB('channel', 1, {
+  const db = await idb.openDB('receiver', 1, {
     upgrade(db) {
       db.createObjectStore('receiver', { keyPath: 'index' })
     },
@@ -27,15 +27,15 @@ async function receiver() {
     await db
       .transaction('receiver', 'readwrite')
       .objectStore('receiver')
-      .put({ index: '1', string: strings[si] })
+      .put({ index: '0', string: strings[si] })
 
     si = +!si // alternate random string index
   }
 
-  const delay = 1000
+  const delay = 200
   async function getThreshold() {
     let thresholds = []
-    const passes = 20
+    const passes = 10
     for (let i = 0; i < passes; i++) {
       let time = new Date().getTime()
       let threshold = 0
@@ -80,7 +80,7 @@ async function receiver() {
   while (true) {
     // align message to readable interval
     let time = Date.now()
-    while (time % interval !== 0) time = Date.now()
+    while (time % (interval * 2) !== 0) time = Date.now()
 
     let id = []
     for (let i = 0; i < length; i++) id = await receive(id)
