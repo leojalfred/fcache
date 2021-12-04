@@ -55,14 +55,12 @@ async function receiver() {
   async function receive() {
     let time = Date.now()
     let rate = 0
-    // console.log(time)
 
     // repeatedly write for delay amount of time, counting puts
     while (Date.now() - time < delay) {
       await put()
       rate++
     }
-    // console.log(rate, threshold)
 
     // add to message based off rate and threshold
     if (rate < threshold) return 1
