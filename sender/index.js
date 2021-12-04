@@ -1,4 +1,3 @@
-// main sender functionality
 async function sender() {
   // open database connection
   const db = await idb.openDB('sender', 1, {
@@ -7,7 +6,7 @@ async function sender() {
     },
   })
 
-  // random string generation function
+  // randomly generate 512kb string
   function genString() {
     let result = ''
     const characters =
@@ -19,34 +18,28 @@ async function sender() {
     return result
   }
 
-  const strings = [genString(), genString()] // generate random strings
-  let si = 0 // initialize random string index
-
-  // set message in channel database
+  // put message
+  const string = genString()
   async function put() {
-    // put message
     await db
       .transaction('sender', 'readwrite')
       .objectStore('sender')
-      .put({ index: '0', string: strings[si] })
-
-    si = +!si // alternate random string index
+      .put({ index: '0', string })
   }
 
-  const message = [0, 0, 0, 0, 1, 1, 1, 1]
+  const message = [1, 0, 1, 0, 1, 0, 1, 0]
   const delay = 200
 
-  // function to send message until delay if message bit equals 1
+  // function to send message for delay amount of time depending on message bit
   async function send(i) {
-    // align time
     let time = Date.now()
-    console.log(time)
+    // console.log(time)
 
     if (message[i]) {
-      console.log('sending 1')
+      // console.log('1')
       while (Date.now() - time < delay) await put()
     } else {
-      console.log('sending 0')
+      // console.log('0')
       while (Date.now() - time < delay) {}
     }
   }
@@ -58,7 +51,8 @@ async function sender() {
     const interval = delay * message.length
     while (time % (interval * 2) !== 0) time = Date.now()
 
-    console.log('New message')
+    // send message
+    // console.log('New message')
     for (let i = 0; i < message.length; i++) await send(i)
   }
 }
