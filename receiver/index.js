@@ -27,7 +27,7 @@ async function receiver() {
     await db
       .transaction('receiver', 'readwrite')
       .objectStore('receiver')
-      .put({ index: '0', string: strings[si] })
+      .put({ index: '1', string: strings[si] })
 
     si = +!si // alternate random string index
   }
@@ -77,14 +77,14 @@ async function receiver() {
   let interval = delay * length
 
   // repeatedly receive message
-  setInterval(async () => {
+  while (true) {
     // align message to readable interval
     let time = Date.now()
     while (time % interval !== 0) time = Date.now()
 
     let id = []
     for (let i = 0; i < length; i++) id = await receive(id)
-  }, interval * 2)
+  }
 }
 
 receiver()

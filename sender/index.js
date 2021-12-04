@@ -51,16 +51,16 @@ async function sender() {
     }
   }
 
-  // align time to interval to work well with receiver
-  let time = Date.now()
-  const interval = delay * message.length
-  while (time % interval !== 0) time = Date.now()
-
   // repeatedly send message
-  setInterval(async () => {
-    console.log('new message')
+  while (true) {
+    // align message to readable interval
+    let time = Date.now()
+    const interval = delay * message.length
+    while (time % interval !== 0) time = Date.now()
+
+    console.log('New message')
     for (let i = 0; i < message.length; i++) await send(i)
-  }, interval)
+  }
 }
 
 sender()
