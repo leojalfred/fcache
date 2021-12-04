@@ -52,34 +52,39 @@ async function receiver() {
   }
   let threshold = await getThreshold()
 
-  async function receive() {
-    let time = new Date().getTime()
+  async function receive(id) {
+    // align time
+    let time = Date.now()
+    console.log(time)
+
     let rate = 0
-    while (new Date().getTime() - time < delay) {
+    while (Date.now() - time < delay) {
       await put()
       rate++
     }
 
     console.log(rate, threshold)
-    if (rate < threshold) return 1
-    else return 0
+
+    if (rate < threshold) id.push(1)
+    else id.push(0)
+
+    console.log('ID', id)
+    return id
   }
 
   // align time to interval to work well with sender
-  let time = new Date().getTime()
   const length = 8
   let interval = delay * length
-  while (time % interval !== 0) time = new Date().getTime()
 
   // repeatedly receive message
   setInterval(async () => {
-    while (time % interval !== 0) time = new Date().getTime()
-    console.log(new Date().getTime())
+    // align message to readable interval
+    let time = Date.now()
+    while (time % interval !== 0) time = Date.now()
 
     let id = []
-    for (let i = 0; i < length; i++) id.push(await receive())
-    console.log(id)
-  }, interval)
+    for (let i = 0; i < length; i++) id = await receive(id)
+  }, interval * 2)
 }
 
 receiver()

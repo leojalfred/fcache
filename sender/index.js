@@ -38,21 +38,27 @@ async function sender() {
 
   // function to send message until delay if message bit equals 1
   async function send(i) {
+    // align time
+    let time = Date.now()
+    console.log(time)
+
     if (message[i]) {
-      let time = new Date().getTime()
-      while (new Date().getTime() - time < delay) await put()
+      console.log('sending 1')
+      while (Date.now() - time < delay) await put()
+    } else {
+      console.log('sending 0')
+      while (Date.now() - time < delay) {}
     }
   }
 
   // align time to interval to work well with receiver
-  let time = new Date().getTime()
-  let interval = delay * message.length
-  while (time % interval !== 0) time = new Date().getTime()
+  let time = Date.now()
+  const interval = delay * message.length
+  while (time % interval !== 0) time = Date.now()
 
   // repeatedly send message
   setInterval(async () => {
-    while (time % interval !== 0) time = new Date().getTime()
-    console.log(new Date().getTime())
+    console.log('new message')
     for (let i = 0; i < message.length; i++) await send(i)
   }, interval)
 }
