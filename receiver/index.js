@@ -55,12 +55,14 @@ async function receiver() {
   async function receive() {
     let time = Date.now()
     let rate = 0
+    console.log(time)
 
     // repeatedly write for delay amount of time, counting puts
     while (Date.now() - time < delay) {
       await put()
       rate++
     }
+    console.log(rate, threshold)
 
     // add to message based off rate and threshold
     if (rate < threshold) return 1
@@ -82,7 +84,21 @@ async function receiver() {
     return message.join('')
   }
 
-  const interval = delay * length * 2
+  const toKeep = 10
+  function shouldEnd() {
+    if (messages.length < toKeep) return false
+
+    const message = []
+    for (let i = 0; i < length; i++) message[i] = messages[0][i]
+
+    for (let i = 0; i < length; i++)
+      for (let j = 1; j < messages.length; j++)
+        if (messages[j][i] != message[i]) return false
+
+    return true
+  }
+
+  const interval = delay * length * 1.01
   let k = 0
   const span = document.getElementById('id')
 
@@ -91,15 +107,22 @@ async function receiver() {
     // align message to readable interval
     let time = Date.now()
     while (time % interval !== 0) time = Date.now()
+    console.log('New message', time)
 
     // get message
     const message = []
     for (let i = 0; i < length; i++) message.push(await receive())
+    console.log(message)
 
     messages[k] = message
-    k = (k + 1) % 100
+    k = (k + 1) % toKeep
 
     span.textContent = averageMessage()
+
+    if (shouldEnd()) {
+      console.log('Message converged, ending.')
+      break
+    }
   }
 }
 

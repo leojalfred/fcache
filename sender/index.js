@@ -33,16 +33,19 @@ async function sender() {
   // function to send message for delay amount of time depending on message bit
   async function send(i) {
     let time = Date.now()
+    console.log(time)
+
     if (message[i]) while (Date.now() - time < delay) await put()
     else while (Date.now() - time < delay) {}
   }
 
   // repeatedly send message
-  const interval = delay * message.length * 2
+  const interval = delay * message.length * 1.01
   while (true) {
     // align message to readable interval
     let time = Date.now()
     while (time % interval !== 0) time = Date.now()
+    console.log('New message', time)
 
     // send message
     for (let i = 0; i < message.length; i++) await send(i)
