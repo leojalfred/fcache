@@ -27,11 +27,18 @@ async function receiver() {
       .put({ index: '0', string })
   }
 
-  // must run sender before receiver to get proper threshold
   const delay = 200
+  const length = 8
+  const interval = delay * length * 1.3
+
+  // must run sender before receiver to get proper threshold
   async function getThreshold() {
     let rates = []
     const passes = 10
+
+    // align message to readable interval
+    let time = Date.now()
+    while (time % interval !== 0) time = Date.now()
 
     // get put rate for each pass
     for (let i = 0; i < passes; i++) {
@@ -69,10 +76,8 @@ async function receiver() {
     else return 0
   }
 
-  const messages = []
-  const length = 8
-
   // average message and return it to string form
+  const messages = []
   function averageMessage() {
     const message = []
     for (let i = 0; i < length; i++) {
@@ -84,21 +89,20 @@ async function receiver() {
     return message.join('')
   }
 
-  const toKeep = 10
-  function shouldEnd() {
-    if (messages.length < toKeep) return false
+  let lastMessage = [0, 0, 0, 0, 0, 0, 0, 0]
+  let sameAverages = 0
+  function shouldEnd(currentMessage) {
+    for (let i = 0; i < length; i++) {
+      if (currentMessage[i] != lastMessage[i]) {
+        lastMessage = currentMessage
+        return false
+      }
+    }
 
-    const message = []
-    for (let i = 0; i < length; i++) message[i] = messages[0][i]
-
-    for (let i = 0; i < length; i++)
-      for (let j = 1; j < messages.length; j++)
-        if (messages[j][i] != message[i]) return false
-
-    return true
+    sameAverages++
+    if (sameAverages === 10) return true
   }
 
-  const interval = delay * length * 1.01
   let k = 0
   const span = document.getElementById('id')
 
@@ -115,11 +119,12 @@ async function receiver() {
     console.log(message)
 
     messages[k] = message
-    k = (k + 1) % toKeep
+    k = (k + 1) % 10
 
-    span.textContent = averageMessage()
+    currentMessage = averageMessage()
+    span.textContent = currentMessage
 
-    if (shouldEnd()) {
+    if (shouldEnd(currentMessage)) {
       console.log('Message converged, ending.')
       break
     }

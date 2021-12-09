@@ -40,7 +40,7 @@ async function sender() {
   }
 
   // repeatedly send message
-  const interval = delay * message.length * 1.01
+  const interval = delay * message.length * 1.3
   while (true) {
     // align message to readable interval
     let time = Date.now()
